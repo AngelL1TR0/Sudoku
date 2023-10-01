@@ -17,116 +17,143 @@ public class Main {
                 {0, 0, 0, 0, 8, 0, 0, 7, 9}
         };
 
-        imprimeTablero(tablero);
-
-        if (jugar(tablero)) {
-            System.out.println("¡Has completado el Sudoku!");
-            imprimeTablero(tablero);
-        } else {
-            System.out.println("No se pudo completar el Sudoku.");
-        }
+        jugar(tablero);
     }
 
-    public static boolean jugar(int[][] board) {
+    /**
+     * Selecciona la fila y columna a jugar para introducir un numero
+     * Despues detecta que se pueda jugar en esa casilla y si se cumplen las normas del sudoku
+     * @param tablero
+     */
+    public static void jugar(int[][] tablero) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("Ingresa la fila (1-9, 0 para terminar): ");
+            imprimirTablero(tablero);
+            System.out.println("Ingresa la fila (1-9, 0 para salir): ");
             int fila = scanner.nextInt();
             if (fila == 0) {
                 break;
             }
 
-            System.out.print("Ingresa la columna (1-9): ");
+            System.out.println("Ingresa la columna (1-9): ");
             int columna = scanner.nextInt();
 
-            if (!esEntradaValida(fila, columna) || !esCasillaVacia(board, fila, columna)) {
-                System.out.println("Entrada inválida. Intenta nuevamente.");
+            if (!esCasillaEditable(tablero, fila, columna)) {
+                System.out.println("No puedes modificar este número.");
                 continue;
             }
 
-            System.out.print("Ingresa el número (1-9) o '0' para borrar: ");
-            int num = scanner.nextInt();
+            System.out.println("Ingresa el número (1-9) o '0' para borrar: ");
+            int numero = scanner.nextInt();
 
-            if (!esNumeroValido(num)) {
-                System.out.println("Número inválido. Intenta nuevamente.");
-                continue;
-            }
-
-            if (!esMovimientoValido(board, fila, columna, num)) {
+            if (numero >= 0 && numero <= 9 && esMovimientoValido(tablero, fila, columna, numero)) {
+                tablero[fila - 1][columna - 1] = numero;
+            } else {
                 System.out.println("Movimiento no válido. Intenta nuevamente.");
-                continue;
             }
-
-            board[fila - 1][columna - 1] = num;
-            imprimeTablero(board);
         }
 
         scanner.close();
-        return true;
     }
 
-    public static void imprimeTablero(int[][] tablero) {
+    /**
+     * Imprime el tablero de juego
+     * @param tablero
+     */
+    public static void imprimirTablero(int[][] tablero) {
+        System.out.println("Tablero de Sudoku:");
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 int num = tablero[i][j];
                 if (num == 0) {
-                    System.out.print("\u001B[33m" + num + "\u001B[0m "); // Amarillo para 0
-                } else if (num < 0) {
-                    System.out.print("\u001B[32m" + num + "\u001B[0m "); // Verde para números nuevos
+                    System.out.print("\u001B[31m" + num + "\u001B[0m "); // Rojo para 0
                 } else {
-                    System.out.print("\u001B[31m" + num + "\u001B[0m "); // Rojo para originales
+                    System.out.print(num + " "); // Resto sin color
                 }
+                //Falta averiguar como los nuevos sean de otro color
             }
             System.out.println();
         }
     }
 
-    public static boolean esEntradaValida(int fila, int columna) {
-        return fila >= 1 && fila <= 9 && columna >= 1 && columna <= 9;
+    /**
+     * Detecta si se puede jugar en esa casilla, es decir que sea un '0'
+     * @param tablero
+     * @param fila
+     * @param columna
+     * @return
+     */
+    public static boolean esCasillaEditable(int[][] tablero, int fila, int columna) {
+        return tablero[fila - 1][columna - 1] == 0;
     }
 
-    public static boolean esCasillaVacia(int[][] board, int fila, int columna) {
-        return board[fila - 1][columna - 1] == 0;
+    /**
+     * Llama al resto de metodos para comprobar que se cumplan las reglas del sudoku
+     * @param tablero
+     * @param fila
+     * @param columna
+     * @param numero
+     * @return
+     */
+    public static boolean esMovimientoValido(int[][] tablero, int fila, int columna, int numero) {
+        return !existeEnFila(tablero, fila, numero) &&
+                !existeEnColumna(tablero, columna, numero) &&
+                !existeEnCuadrante(tablero, fila, columna, numero);
     }
 
-    public static boolean esNumeroValido(int num) {
-        return num >= 0 && num <= 9;
-    }
-
-    public static boolean esMovimientoValido(int[][] board, int fila, int columna, int num) {
-        // Verificar si el número ya existe en la misma fila, columna o cuadrante
-        return !existeEnFila(board, fila, num) && !existeEnColumna(board, columna, num) && !existeEnCuadrante(board, fila, columna, num);
-    }
-
-    public static boolean existeEnFila(int[][] board, int fila, int num) {
-        for (int col = 0; col < 9; col++) {
-            if (board[fila - 1][col] == num) {
+    /**
+     * Detecta que el mismo numero no este en la misma fila
+     * @param tablero
+     * @param fila
+     * @param numero
+     * @return
+     */
+    public static boolean existeEnFila(int[][] tablero, int fila, int numero) {
+        for (int i = 0; i < 9; i++) {
+            if (tablero[fila - 1][i] == numero) {
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean existeEnColumna(int[][] board, int columna, int num) {
-        for (int fila = 0; fila < 9; fila++) {
-            if (board[fila][columna - 1] == num) {
+    /**
+     * Detecta que el mismo numero no este en la misma columna
+     * @param tablero
+     * @param columna
+     * @param numero
+     * @return
+     */
+    public static boolean existeEnColumna(int[][] tablero, int columna, int numero) {
+        for (int i = 0; i < 9; i++) {
+            if (tablero[i][columna - 1] == numero) {
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean existeEnCuadrante(int[][] board, int fila, int columna, int num) {
+    /**
+     * Detecta que el mismo numero introducido no este en el mismo cuadrante 3x3
+     * @param tablero
+     * @param fila
+     * @param columna
+     * @param numero
+     * @return
+     */
+    public static boolean existeEnCuadrante(int[][] tablero, int fila, int columna, int numero) {
         int cuadranteFilaInicio = (fila - 1) / 3 * 3;
         int cuadranteColumnaInicio = (columna - 1) / 3 * 3;
+
         for (int i = cuadranteFilaInicio; i < cuadranteFilaInicio + 3; i++) {
             for (int j = cuadranteColumnaInicio; j < cuadranteColumnaInicio + 3; j++) {
-                if (board[i][j] == num) {
+                if (tablero[i][j] == numero) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 }
