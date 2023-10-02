@@ -83,6 +83,23 @@ public class Main {
     public static boolean verificarCuadrante(int[][] tablero) {
         for (int i = 0; i < 9; i += 3) {
             for (int j = 0; j < 9; j += 3) {
+                ArrayList<Integer> numerosVistos = new ArrayList<>();
+                for (int x = i; x < i + 3; x++) {
+                    for (int y = j; y < j + 3; y++) {
+                        int numero = tablero[x][y];
+                        if (numerosVistos.contains(numero)) {
+                            return true;
+                        }
+                        numerosVistos.add(numero);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+        /*
+        for (int i = 0; i < 9; i += 3) {
+            for (int j = 0; j < 9; j += 3) {
                 for (int pos = 0; pos < 8; pos++) {
                     for (int pos2 = pos + 1; pos2 < 9; pos2++) {
                         int x1 = i + pos % 3;
@@ -99,7 +116,7 @@ public class Main {
         }
         return true;
     }
-        /*
+
         int cuadranteFilaInicio = (i / 3) * 3;
         int cuadranteColumnaInicio = (j / 3) * 3;
         for (int x = cuadranteFilaInicio; x < cuadranteFilaInicio + 3; x++) {
