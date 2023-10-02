@@ -23,7 +23,6 @@ public class Main {
                  */
 
                 //tablero bien
-                /*
                 {5, 3, 4, 6, 7, 8, 9, 1, 2},
                 {6, 7, 2, 1, 9, 5, 3, 4, 8},
                 {1, 9, 8, 3, 4, 2, 5, 6, 7},
@@ -34,11 +33,9 @@ public class Main {
                 {2, 8, 7, 4, 1, 9, 6, 3, 5},
                 {3, 4, 5, 2, 8, 6, 1, 7, 9}
 
-                 */
-
 
                 //tablero mal
-
+                /*
                 {5, 3, 4, 6, 7, 8, 9, 1, 2},
                 {6, 7, 2, 1, 9, 5, 3, 4, 8},
                 {1, 9, 8, 3, 4, 2, 5, 6, 7},
@@ -48,15 +45,15 @@ public class Main {
                 {9, 6, 1, 5, 3, 7, 2, 8, 4},
                 {2, 8, 7, 4, 1, 9, 6, 3, 5},
                 {3, 4, 5, 2, 8, 6, 1, 7, 5}
-
-
+                 */
 
         };
+
         //Metodo para empezar a jugar
         //comprobar(tablero);
 
         //Condicion que determina si la plantilla esta bien o no
-        if (esSudokuValido(tablero)) {
+        if (verificarSudoku(tablero)) {
             System.out.println("El sudoku está resuelto correctamente.");
         } else {
             System.out.println("El sudoku no está resuelto correctamente.");
@@ -69,10 +66,10 @@ public class Main {
      * @param tablero
      * @return
      */
-    private static boolean esSudokuValido(int[][] tablero) {
+    private static boolean verificarSudoku(int[][] tablero) {
         // Verificaciones
         if (verificarFila(tablero) || verificarColumna(tablero)
-            /*|| verificarCuadrante(tablero, i, j, num)*/ ) return false;
+                || verificarCuadrante(tablero)) return false;
 
         return true;
     }
@@ -81,30 +78,65 @@ public class Main {
      * Verifica si un número en una posición específica de un cuadrante ya existe en el mismo.
      *
      * @param tablero
-     * @param i
-     * @param j
-     * @param num
      * @return
      */
-    private static boolean verificarCuadrante(int[][] tablero, int i, int j, int num) {
+    public static boolean verificarCuadrante(int[][] tablero) {
+        for (int i = 0; i < 9; i += 3) {
+            for (int j = 0; j < 9; j += 3) {
+                for (int pos = 0; pos < 8; pos++) {
+                    for (int pos2 = pos + 1; pos2 < 9; pos2++) {
+                        int x1 = i + pos % 3;
+                        int y1 = j + pos / 3;
+                        int x2 = i + pos2 % 3;
+                        int y2 = j + pos2 / 3;
+
+                        if (tablero[x1][y1] == tablero[x2][y2]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+        /*
         int cuadranteFilaInicio = (i / 3) * 3;
         int cuadranteColumnaInicio = (j / 3) * 3;
         for (int x = cuadranteFilaInicio; x < cuadranteFilaInicio + 3; x++) {
             for (int y = cuadranteColumnaInicio; y < cuadranteColumnaInicio + 3; y++) {
-                if (x != i && y != j && tablero[x][y] == num) {
-                    return true;
+                int num = tablero[x][y];
+                for (int w = cuadranteFilaInicio; w < cuadranteFilaInicio + 3; x++) {
+                    for (int z = w + 1; z < cuadranteColumnaInicio + 3; y++) {
+                        if (x != w && y != z && tablero[x][y] == num) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
         return false;
     }
+         */
 
     /**
      * Verifica que no se repitan numeros en la misma columna
+     *
      * @param tablero
      * @return
      */
-    private static boolean verificarColumna(int[][] tablero) {
+    public static boolean verificarColumna(int[][] tablero) {
+        for (int j = 0; j < 9; j++) {
+            for (int i = 0; i < 9; i++) {
+                for (int k = i + 1; k < 9; k++) {
+                    if (tablero[i][j] == tablero[k][j]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    /*
         for (int j = 0; j < 9; j++) {
             ArrayList<Integer> repetidos = new ArrayList<>();
             for (int i = 0; i < 9; i++) {
@@ -118,12 +150,27 @@ public class Main {
         return false;
     }
 
+     */
+
     /**
      * Verifica que no se repitan numeros en la misma fila
+     *
      * @param tablero
      * @return
      */
-    private static boolean verificarFila(int[][] tablero) {
+    public static boolean verificarFila(int[][] tablero) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                for (int k = j + 1; k < 9; k++) {
+                    if (tablero[i][j] == tablero[i][k]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+        /*
         for (int i = 0; i < 9; i++) {
             ArrayList<Integer> repetidos = new ArrayList<>();
             for (int j = 0; j < 9; j++) {
@@ -136,7 +183,7 @@ public class Main {
         }
         return false;
     }
-
+         */
 
 
     /**
